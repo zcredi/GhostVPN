@@ -15,14 +15,14 @@ import UIKit
 protocol HomeDisplayLogic: AnyObject {
 }
 
-final class HomeViewController: UIViewController, HomeDisplayLogic {
+public final class HomeViewController: UIViewController, HomeDisplayLogic {
     
     
   var interactor: HomeBusinessLogic?
 
   // MARK: Object lifecycle
   
-  override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?)
+    public override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?)
   {
     super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
     setup()
@@ -53,7 +53,7 @@ final class HomeViewController: UIViewController, HomeDisplayLogic {
   
   // MARK: View lifecycle
   
-  override func viewDidLoad()
+    public override func viewDidLoad()
   {
     super.viewDidLoad()
     

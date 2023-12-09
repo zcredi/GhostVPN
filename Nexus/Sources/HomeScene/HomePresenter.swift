@@ -12,11 +12,27 @@
 
 import Foundation
 
+enum ConnectionState: Equatable {
+    case none
+    case loading
+    case success
+    case error(Error)
+    
+    static func == (lhs: ConnectionState, rhs: ConnectionState) -> Bool {
+        String(describing: lhs) == String(describing: rhs)
+    }
+}
+
 protocol HomePresentationLogic {
-  
+    func connectionState(_ state: ConnectionState)
 }
 
 final class HomePresenter: HomePresentationLogic {
+    
   weak var viewController: HomeDisplayLogic?
   
+    func connectionState(_ state: ConnectionState) {
+        
+    }
 }
+

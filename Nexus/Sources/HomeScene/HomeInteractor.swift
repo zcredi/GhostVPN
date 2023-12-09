@@ -42,13 +42,20 @@ final class HomeInteractor: HomeBusinessLogic, HomeDataStore {
     }
     
     func connectToVPN() {
+        presenter?.connectionState(.loading)
         vpnManager.connectToVPN(
             .init(
                 username: "",
                 serverAddress: ""
             )
-        ) { error in
-            
+        ) { [weak self] error in
+            guard let self else { return }
+            switch error {
+            case .some(let error):
+                presenter?.connectionState(.error(error))
+            case .none:
+                presenter?.connectionState(.success)
+            }
         }
     }
     
