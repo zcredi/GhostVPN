@@ -11,19 +11,18 @@
 //
 
 import Foundation
+import VPNManager
+import LocationService
 
-protocol VPNManagerProtocol {
-    func connectToVPN(serverInfo: VPNServerInfo, completion: @escaping (Error?) -> Void)
-    func disconnectFromVPN(completion: @escaping (Error?) -> Void)
+// MARK: - NetworkError
+enum NetworkError: Error {
+    case invalidURL
+    case noData
 }
 
 protocol HomeBusinessLogic {
     func connectToVPN()
     func disconnectFromVPN()
-}
-
-protocol LocationService {
-    func currentLocation() -> VPNServerInfo
 }
 
 protocol HomeDataStore {
@@ -43,16 +42,18 @@ final class HomeInteractor: HomeBusinessLogic, HomeDataStore {
     }
     
     func connectToVPN() {
-        let serverInfo = locationService.currentLocation()
-        vpnManager.connectToVPN(serverInfo: serverInfo) { error in
+        vpnManager.connectToVPN(
+            .init(
+                username: "",
+                serverAddress: ""
+            )
+        ) { error in
             
         }
     }
     
     func disconnectFromVPN() {
-        vpnManager.disconnectFromVPN { error in
-            
-        }
+        vpnManager.disconnectFromVPN()
     }
     
 }
