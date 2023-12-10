@@ -8,6 +8,8 @@
 import XCTest
 import LocationService
 import VPNManager
+import TimeService
+
 @testable import HomeScene
 
 final class HomeInteractorTests: XCTestCase {
@@ -15,12 +17,18 @@ final class HomeInteractorTests: XCTestCase {
     private var mockVPN: MockVPN!
     private var mockLocationServes: MockLocationServes!
     private var mockPresenter: MockPresenter!
+    private var mockTimer: MockTimer!
     
     override func setUp() async throws {
         try await super.setUp()
         mockVPN = MockVPN()
         mockLocationServes = MockLocationServes()
-        sut = HomeInteractor(vpnManager: mockVPN, locationService: mockLocationServes)
+        mockTimer = .init()
+        sut = HomeInteractor(
+            vpnManager: mockVPN, 
+            locationService: mockLocationServes,
+            timeService: mockTimer
+        )
         mockPresenter = MockPresenter()
         sut.presenter = mockPresenter
     }
@@ -29,6 +37,8 @@ final class HomeInteractorTests: XCTestCase {
         sut = nil
         mockVPN = nil
         mockLocationServes = nil
+        mockPresenter = nil
+        mockTimer = nil
         try await super.tearDown()
     }
     
@@ -41,7 +51,7 @@ final class HomeInteractorTests: XCTestCase {
     func test_connectToVPN_EndWithSuccess() {
         sut.connectToVPN()
         
-        XCTAssertEqual(mockPresenter.state, [.loading, .success])
+        XCTAssertEqual(mockPresenter.state, [.loading, .connected])
     }
     
     func test_connectToVPN_EndWithError() {
@@ -53,16 +63,78 @@ final class HomeInteractorTests: XCTestCase {
         XCTAssertEqual(mockPresenter.state, [.loading, .error(error)])
     }
     
+    func test_disconnectFromVPN() {
+        mockPresenter.state = []
+        
+        sut.disconnectFromVPN()
+        
+        XCTAssertTrue(mockVPN.isRequested)
+        XCTAssertEqual(mockPresenter.state.last, ConnectionState.disconnected)
+    }
     
+    func test_connectToVPN_startsTimer() {
+        sut.connectToVPN()
+        
+        XCTAssertTrue(mockTimer.isStarted)
+    }
+    
+    func test_connectToVPNFailed_doesntStartTimer() {
+        let error = URLError(.badURL)
+        mockVPN.error = error
+        
+        sut.connectToVPN()
+
+        XCTAssertFalse(mockTimer.isStarted)
+    }
+    
+    func test_interactorPublishCurrentTime() {
+        sut.connectToVPN()
+        
+        mockTimer.tick()
+        mockTimer.tick()
+        mockTimer.tick()
+        
+        XCTAssertEqual(mockPresenter.counter, 3)
+    }
+    
+    func test_interactorStopPublishingTimeAfterDisconnect() {
+        sut.connectToVPN()
+        
+        mockTimer.tick()
+    
+        sut.disconnectFromVPN()
+        
+        mockTimer.tick()
+        
+        XCTAssertEqual(mockPresenter.counter, 1)
+    }
 }
 
 private extension HomeInteractorTests {
+    class MockTimer: TimeService {
+        var tick: () -> Void = {}
+        private(set) var isStarted = false
+        
+        func start(interval: TimeInterval, tick: @escaping () -> Void) {
+            isStarted = true
+            self.tick = tick
+        }
+        
+        func stop() {
+            tick = {}
+        }
+    }
     
     class MockPresenter: HomePresentationLogic {
-        private(set) var state: [ConnectionState] = .init()
+        var state: [ConnectionState] = .init()
+        private(set) var counter: TimeInterval = 0
         
         func connectionState(_ state: HomeScene.ConnectionState) {
             self.state.append(state)
+        }
+        
+        func connectionTime(_ time: TimeInterval) {
+            counter = time
         }
     }
     
@@ -80,11 +152,23 @@ private extension HomeInteractorTests {
         }
         
         func disconnectFromVPN() {
-            isRequested = false
+            isRequested = true
         }
     }
     
     class MockLocationServes: LocationService {
+        func currentLocation() -> ServiceInfo {
+            .init(iconName: "", title: "", ipAddress: "", ping: 0)
+        }
+        
+        func basicServices() -> [ServiceInfo] {
+            []
+        }
+        
+        func setSelected(_ service: ServiceInfo) {
+            
+        }
+        
         func currentLocation() {
            
         }

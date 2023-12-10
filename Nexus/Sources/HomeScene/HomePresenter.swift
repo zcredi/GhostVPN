@@ -13,9 +13,9 @@
 import Foundation
 
 enum ConnectionState: Equatable {
-    case none
+    case disconnected
     case loading
-    case success
+    case connected
     case error(Error)
     
     static func == (lhs: ConnectionState, rhs: ConnectionState) -> Bool {
@@ -23,15 +23,19 @@ enum ConnectionState: Equatable {
     }
 }
 
-protocol HomePresentationLogic {
+protocol HomePresentationLogic: AnyObject {
     func connectionState(_ state: ConnectionState)
+    func connectionTime(_ time: TimeInterval)
 }
 
 final class HomePresenter: HomePresentationLogic {
-    
   weak var viewController: HomeDisplayLogic?
   
     func connectionState(_ state: ConnectionState) {
+        
+    }
+    
+    func connectionTime(_ time: TimeInterval) {
         
     }
 }

@@ -13,6 +13,7 @@
 import Foundation
 import VPNManager
 import LocationService
+import TimeService
 
 // MARK: - NetworkError
 enum NetworkError: Error {
@@ -21,6 +22,7 @@ enum NetworkError: Error {
 }
 
 protocol HomeBusinessLogic {
+    func viewDidAppear()
     func connectToVPN()
     func disconnectFromVPN()
 }
@@ -30,15 +32,34 @@ protocol HomeDataStore {
 }
 
 final class HomeInteractor: HomeBusinessLogic, HomeDataStore {
+    private struct Settings {
+        static let tickInterval: TimeInterval = 1
+    }
     
-    var presenter: HomePresentationLogic?
+    weak var presenter: HomePresentationLogic?
 
     private let vpnManager: VPNManagerProtocol
     private let locationService: LocationService
+    private let timeService: TimeService
     
-    init(vpnManager: VPNManagerProtocol, locationService: LocationService) {
+    private var connectionTime: TimeInterval = 0 {
+        didSet { presenter?.connectionTime(connectionTime) }
+    }
+    
+    //MARK: - init(_:)
+    init(
+        vpnManager: VPNManagerProtocol,
+        locationService: LocationService,
+        timeService: TimeService = TimeServiceImpl.shared
+    ) {
         self.vpnManager = vpnManager
         self.locationService = locationService
+        self.timeService = timeService
+    }
+    
+    //MARK: - Public methods
+    func viewDidAppear() {
+        let selectedService = locationService.currentLocation()
     }
     
     func connectToVPN() {
@@ -47,20 +68,37 @@ final class HomeInteractor: HomeBusinessLogic, HomeDataStore {
             .init(
                 username: "",
                 serverAddress: ""
-            )
-        ) { [weak self] error in
+            ),
+            completion: handler()
+        )
+    }
+    
+    func disconnectFromVPN() {
+        vpnManager.disconnectFromVPN()
+        timeService.stop()
+        presenter?.connectionState(.disconnected)
+    }
+    
+}
+
+private extension HomeInteractor {
+    //MARK: - Private methods
+    func startTimer() {
+        timeService.start(interval: Settings.tickInterval) {
+            self.connectionTime += 1
+        }
+    }
+    
+    func handler() -> (Error?) -> Void {
+        { [weak self] error in
             guard let self else { return }
             switch error {
             case .some(let error):
                 presenter?.connectionState(.error(error))
             case .none:
-                presenter?.connectionState(.success)
+                presenter?.connectionState(.connected)
+                startTimer()
             }
         }
     }
-    
-    func disconnectFromVPN() {
-        vpnManager.disconnectFromVPN()
-    }
-    
 }
