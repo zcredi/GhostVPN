@@ -1,5 +1,5 @@
 //
-//  VPNService .swift
+//  VPNManager.swift
 //  GhostVPN
 //
 //  Created by Владислав on 05.12.2023.
@@ -7,12 +7,18 @@
 
 import NetworkExtension
 
-final class VPNManager {
+public protocol VPNManagerProtocol {
+    func connectToVPN(_ serverInfo: ServerInfo, completion: @escaping (Error?) -> Void)
+    func disconnectFromVPN()
+}
+
+final class VPNManager: VPNManagerProtocol {
     private let vpnManager = NEVPNManager.shared()
 
-    func connectToVPN(serverInfo: VPNServerInfo, completion: @escaping (Error?) -> Void) {
-        vpnManager.loadFromPreferences { error in
-            if let error = error {
+     func connectToVPN(_ serverInfo: ServerInfo, completion: @escaping (Error?) -> Void) {
+        vpnManager.loadFromPreferences { [weak self] error in
+            guard let self else { return }
+            if let error {
                 completion(error)
                 return
             }
@@ -20,14 +26,14 @@ final class VPNManager {
             let vpnProtocol = NEVPNProtocolIKEv2()
             
             // Настроить соединение VPN на основе переданных данных о сервере
-            vpnProtocol.username = "yourUsername"
-            vpnProtocol.serverAddress = serverInfo.ip
+            vpnProtocol.username = serverInfo.userName
+            vpnProtocol.serverAddress = serverInfo.serverAddress
             // Другие настройки, такие как пароль, аутентификация, порты и т. д. могут быть добавлены в соответствии с вашими требованиями
-            self.vpnManager.protocolConfiguration = vpnProtocol
-            self.vpnManager.isEnabled = true
+            vpnManager.protocolConfiguration = vpnProtocol
+            vpnManager.isEnabled = true
 
-            self.vpnManager.saveToPreferences { error in
-                if let error = error {
+            vpnManager.saveToPreferences { error in
+                if let error {
                     completion(error)
                     return
                 }
@@ -42,11 +48,9 @@ final class VPNManager {
         }
     }
 
-    func disconnectFromVPN(completion: @escaping (Error?) -> Void) {
-        if vpnManager.connection.status != .disconnected {
+     func disconnectFromVPN() {
+        guard vpnManager.connection.status != .disconnected else { return }
             vpnManager.connection.stopVPNTunnel()
-        }
-        completion(nil)
     }
 }
 

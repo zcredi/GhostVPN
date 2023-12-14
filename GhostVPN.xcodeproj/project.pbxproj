@@ -11,23 +11,9 @@
 		860268CE2B10EDBA00CAE538 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 860268CD2B10EDBA00CAE538 /* SceneDelegate.swift */; };
 		860268D52B10EDBB00CAE538 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 860268D42B10EDBB00CAE538 /* Assets.xcassets */; };
 		860268D82B10EDBB00CAE538 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 860268D62B10EDBB00CAE538 /* LaunchScreen.storyboard */; };
-		865861C72B1F85F4007A26D4 /* VPNModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 865861C62B1F85F4007A26D4 /* VPNModel.swift */; };
-		867E1B582B1F6CE3008B868E /* VPNService .swift in Sources */ = {isa = PBXBuildFile; fileRef = 867E1B572B1F6CE3008B868E /* VPNService .swift */; };
-		8687C2652B234AAB00CF3E77 /* HomeInteractorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8687C2642B234AAB00CF3E77 /* HomeInteractorTests.swift */; };
-		869CACB72B18D4D400A021C0 /* HomePresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 869CACB12B18D4D400A021C0 /* HomePresenter.swift */; };
-		869CACBB2B18D4D400A021C0 /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 869CACB52B18D4D400A021C0 /* HomeViewController.swift */; };
-		869CACBC2B18D4D400A021C0 /* HomeInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 869CACB62B18D4D400A021C0 /* HomeInteractor.swift */; };
+		86760E9B2B286F1B00A058AC /* HomeScene in Frameworks */ = {isa = PBXBuildFile; productRef = 86760E9A2B286F1B00A058AC /* HomeScene */; };
+		8691376C2B25AC0400B7D8E8 /* Nexus in Resources */ = {isa = PBXBuildFile; fileRef = 8691376B2B25AC0400B7D8E8 /* Nexus */; };
 /* End PBXBuildFile section */
-
-/* Begin PBXContainerItemProxy section */
-		8687C25F2B234A5C00CF3E77 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 860268C02B10EDBA00CAE538 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 860268C72B10EDBA00CAE538;
-			remoteInfo = GhostVPN;
-		};
-/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		860268C82B10EDBA00CAE538 /* GhostVPN.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GhostVPN.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -36,13 +22,7 @@
 		860268D42B10EDBB00CAE538 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		860268D72B10EDBB00CAE538 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		860268D92B10EDBB00CAE538 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		865861C62B1F85F4007A26D4 /* VPNModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VPNModel.swift; sourceTree = "<group>"; };
-		867E1B572B1F6CE3008B868E /* VPNService .swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "VPNService .swift"; sourceTree = "<group>"; };
-		8687C25B2B234A5C00CF3E77 /* GhostVPNTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GhostVPNTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		8687C2642B234AAB00CF3E77 /* HomeInteractorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeInteractorTests.swift; sourceTree = "<group>"; };
-		869CACB12B18D4D400A021C0 /* HomePresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomePresenter.swift; sourceTree = "<group>"; };
-		869CACB52B18D4D400A021C0 /* HomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
-		869CACB62B18D4D400A021C0 /* HomeInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeInteractor.swift; sourceTree = "<group>"; };
+		8691376B2B25AC0400B7D8E8 /* Nexus */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = Nexus; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -50,13 +30,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		8687C2582B234A5C00CF3E77 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
+				86760E9B2B286F1B00A058AC /* HomeScene in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -66,9 +40,10 @@
 		860268BF2B10EDBA00CAE538 = {
 			isa = PBXGroup;
 			children = (
+				8691376B2B25AC0400B7D8E8 /* Nexus */,
 				860268CA2B10EDBA00CAE538 /* GhostVPN */,
-				8687C25C2B234A5C00CF3E77 /* GhostVPNTests */,
 				860268C92B10EDBA00CAE538 /* Products */,
+				86760E992B286F1B00A058AC /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -76,7 +51,6 @@
 			isa = PBXGroup;
 			children = (
 				860268C82B10EDBA00CAE538 /* GhostVPN.app */,
-				8687C25B2B234A5C00CF3E77 /* GhostVPNTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -93,19 +67,16 @@
 			path = GhostVPN;
 			sourceTree = "<group>";
 		};
-		8687C25C2B234A5C00CF3E77 /* GhostVPNTests */ = {
+		86760E992B286F1B00A058AC /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				8687C2642B234AAB00CF3E77 /* HomeInteractorTests.swift */,
 			);
-			path = GhostVPNTests;
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		86BA3C242B175CAC004E72C5 /* Services */ = {
 			isa = PBXGroup;
 			children = (
-				867E1B572B1F6CE3008B868E /* VPNService .swift */,
-				865861C62B1F85F4007A26D4 /* VPNModel.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -113,7 +84,6 @@
 		86BA3C252B175CC2004E72C5 /* Scenes */ = {
 			isa = PBXGroup;
 			children = (
-				86BA3C272B175CF9004E72C5 /* HomeScene */,
 			);
 			path = Scenes;
 			sourceTree = "<group>";
@@ -123,16 +93,6 @@
 			children = (
 			);
 			path = Models;
-			sourceTree = "<group>";
-		};
-		86BA3C272B175CF9004E72C5 /* HomeScene */ = {
-			isa = PBXGroup;
-			children = (
-				869CACB12B18D4D400A021C0 /* HomePresenter.swift */,
-				869CACB52B18D4D400A021C0 /* HomeViewController.swift */,
-				869CACB62B18D4D400A021C0 /* HomeInteractor.swift */,
-			);
-			path = HomeScene;
 			sourceTree = "<group>";
 		};
 		86BA3C2A2B1772C5004E72C5 /* Application */ = {
@@ -171,28 +131,11 @@
 			);
 			name = GhostVPN;
 			packageProductDependencies = (
+				86760E9A2B286F1B00A058AC /* HomeScene */,
 			);
 			productName = GhostVPN;
 			productReference = 860268C82B10EDBA00CAE538 /* GhostVPN.app */;
 			productType = "com.apple.product-type.application";
-		};
-		8687C25A2B234A5C00CF3E77 /* GhostVPNTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 8687C2632B234A5C00CF3E77 /* Build configuration list for PBXNativeTarget "GhostVPNTests" */;
-			buildPhases = (
-				8687C2572B234A5C00CF3E77 /* Sources */,
-				8687C2582B234A5C00CF3E77 /* Frameworks */,
-				8687C2592B234A5C00CF3E77 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				8687C2602B234A5C00CF3E77 /* PBXTargetDependency */,
-			);
-			name = GhostVPNTests;
-			productName = GhostVPNTests;
-			productReference = 8687C25B2B234A5C00CF3E77 /* GhostVPNTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
 
@@ -206,10 +149,6 @@
 				TargetAttributes = {
 					860268C72B10EDBA00CAE538 = {
 						CreatedOnToolsVersion = 14.3.1;
-					};
-					8687C25A2B234A5C00CF3E77 = {
-						CreatedOnToolsVersion = 14.3.1;
-						TestTargetID = 860268C72B10EDBA00CAE538;
 					};
 				};
 			};
@@ -229,7 +168,6 @@
 			projectRoot = "";
 			targets = (
 				860268C72B10EDBA00CAE538 /* GhostVPN */,
-				8687C25A2B234A5C00CF3E77 /* GhostVPNTests */,
 			);
 		};
 /* End PBXProject section */
@@ -239,15 +177,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8691376C2B25AC0400B7D8E8 /* Nexus in Resources */,
 				860268D82B10EDBB00CAE538 /* LaunchScreen.storyboard in Resources */,
 				860268D52B10EDBB00CAE538 /* Assets.xcassets in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		8687C2592B234A5C00CF3E77 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -258,33 +190,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				865861C72B1F85F4007A26D4 /* VPNModel.swift in Sources */,
-				869CACB72B18D4D400A021C0 /* HomePresenter.swift in Sources */,
 				860268CC2B10EDBA00CAE538 /* AppDelegate.swift in Sources */,
-				867E1B582B1F6CE3008B868E /* VPNService .swift in Sources */,
-				869CACBC2B18D4D400A021C0 /* HomeInteractor.swift in Sources */,
 				860268CE2B10EDBA00CAE538 /* SceneDelegate.swift in Sources */,
-				869CACBB2B18D4D400A021C0 /* HomeViewController.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		8687C2572B234A5C00CF3E77 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				8687C2652B234AAB00CF3E77 /* HomeInteractorTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		8687C2602B234A5C00CF3E77 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 860268C72B10EDBA00CAE538 /* GhostVPN */;
-			targetProxy = 8687C25F2B234A5C00CF3E77 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		860268D62B10EDBB00CAE538 /* LaunchScreen.storyboard */ = {
@@ -474,42 +385,6 @@
 			};
 			name = Release;
 		};
-		8687C2612B234A5C00CF3E77 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 5MT2PBNQ85;
-				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.zcredi.GhostVPNTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/GhostVPN.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/GhostVPN";
-			};
-			name = Debug;
-		};
-		8687C2622B234A5C00CF3E77 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 5MT2PBNQ85;
-				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.zcredi.GhostVPNTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/GhostVPN.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/GhostVPN";
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -531,16 +406,14 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		8687C2632B234A5C00CF3E77 /* Build configuration list for PBXNativeTarget "GhostVPNTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				8687C2612B234A5C00CF3E77 /* Debug */,
-				8687C2622B234A5C00CF3E77 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 /* End XCConfigurationList section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		86760E9A2B286F1B00A058AC /* HomeScene */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = HomeScene;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 860268C02B10EDBA00CAE538 /* Project object */;
 }

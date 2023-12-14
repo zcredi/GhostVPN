@@ -1,5 +1,5 @@
 //
-//  VPNModel.swift
+//  VPNServerInfo.swift
 //  GhostVPN
 //
 //  Created by Владислав on 05.12.2023.
@@ -7,28 +7,21 @@
 
 import Foundation
 
-// MARK: - NetworkError
-
-enum NetworkError: Error {
-    case invalidURL
-    case noData
-}
-
 // MARK: - VPNServerInfo
-struct VPNServerInfo: Codable {
-    let ip: String
-    let security: Security
-    let location: Location
-    let network: Network
+ public struct VPNServerInfo: Codable {
+    public let ip: String
+    public let security: Security
+    public let location: Location
+    public let network: Network
 }
 
 // MARK: - Location
-struct Location: Codable {
+public struct Location: Codable {
     let city, region, country, continent: String
     let regionCode, countryCode, continentCode, latitude: String
     let longitude, timeZone, localeCode, metroCode: String
     let isInEuropeanUnion: Bool
-
+    
     enum CodingKeys: String, CodingKey {
         case city, region, country, continent
         case regionCode = "region_code"
@@ -43,9 +36,9 @@ struct Location: Codable {
 }
 
 // MARK: - Network
-struct Network: Codable {
+public struct Network: Codable {
     let network, autonomousSystemNumber, autonomousSystemOrganization: String
-
+    
     enum CodingKeys: String, CodingKey {
         case network
         case autonomousSystemNumber = "autonomous_system_number"
@@ -54,6 +47,6 @@ struct Network: Codable {
 }
 
 // MARK: - Security
-struct Security: Codable {
+public  struct Security: Codable {
     let vpn, proxy, tor, relay: Bool
 }
