@@ -26,7 +26,7 @@ struct ServerViewModel {
     let iconName: String
     let title: String
     let ipAdress: String
-    let ping: Int
+    let ping: String
     
     init(from serviceInfo: ServiceInfo) {
         self.iconName = serviceInfo.iconName
