@@ -11,54 +11,91 @@
 //
 
 import UIKit
+import LocationService
+import VPNManager
 
 protocol HomeDisplayLogic: AnyObject {
-    
+    func displayConnectionState(_ state: String)
+    func displayCurrentServer(_ viewModel: ServerViewModel)
+    func displayServerError(_ message: String)
+    func displayConnectionTime(_ time: String)
 }
 
-public final class HomeViewController: UIViewController, HomeDisplayLogic {
-    
-    
+public final class HomeViewController: UIViewController {
     var interactor: HomeBusinessLogic?
+    private let vpnManager: VPNManagerProtocol
+    private let locationService: LocationService
     
-    // MARK: Object lifecycle
+    //MARK: - UI
     
-    public override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
-        super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
-        setup()
+    private let connectionStateLabel = UILabel()
+    private let iconNameImageView = UIImageView()
+    private let titleServerLabel = UILabel()
+    private let ipAdressLabel = UILabel()
+    private let pingLabel = UILabel()
+    private let timerLabel = UILabel()
+    
+    
+    //MARK: - init(_:)
+    
+    init(interactor: HomeBusinessLogic? = nil, vpnManager: VPNManagerProtocol, locationService: LocationService) {
+        self.vpnManager = vpnManager
+        self.locationService = locationService
+        super.init(nibName: nil, bundle: nil)
+        self.interactor = interactor
     }
     
-    public required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-        setup()
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
     
     // MARK: Setup
     
-    private func setup()
-    {
-        //    let viewController = self
-        //    let interactor = HomeInteractor()
-        //    let presenter = HomePresenter()
-        //    let router = HomeRouter()
-        //    viewController.interactor = interactor
-        //    viewController.router = router
-        //    interactor.presenter = presenter
-        //    presenter.viewController = viewController
-        //    router.viewController = viewController
-        //    router.dataStore = interactor
+    private func setup() {
+        let viewController = self
+        let interactor = HomeInteractor(vpnManager: vpnManager, locationService: locationService)
+        let presenter = HomePresenter()
+        viewController.interactor = interactor
+        interactor.presenter = presenter
+        presenter.view = viewController
+        
     }
-    
     
     // MARK: View lifecycle
     
     public override func viewDidLoad() {
         super.viewDidLoad()
-        
+        setup()
+        interactor?.connectToVPN()
+        interactor?.disconnectFromVPN()
     }
     
-    // MARK: Do something
+}
+
+// MARK: HomeDisplayLogic
+extension HomeViewController: HomeDisplayLogic {
+    func displayConnectionTime(_ time: String) {
+        timerLabel.text = time
+    }
     
-    //@IBOutlet weak var nameTextField: UITextField!
+    func displayConnectionState(_ state: String) {
+        connectionStateLabel.text = state
+    }
     
+    func displayCurrentServer(_ viewModel: ServerViewModel) {
+        iconNameImageView.image = UIImage(named: viewModel.iconName)
+        titleServerLabel.text = viewModel.title
+        ipAdressLabel.text = viewModel.ipAdress
+        pingLabel.text = String(viewModel.ping)
+    }
+    
+    func displayServerError(_ message: String) {
+        showAlert(withTitle: "Ошибка", message: message)
+        
+        func showAlert(withTitle title: String, message: String) {
+            let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+            present(alert, animated: true)
+        }
+    }
 }

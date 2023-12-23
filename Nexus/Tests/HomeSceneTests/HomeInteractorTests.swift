@@ -109,9 +109,27 @@ final class HomeInteractorTests: XCTestCase {
         
         XCTAssertEqual(mockPresenter.counter, 1)
     }
+    
+    func test_currentLocationSent() {
+        let serviceInfo = ServiceInfo(iconName: "bus", title: "bus", ipAdress: "bus", ping: 0)
+        mockLocationServes.location = serviceInfo
+        
+        sut.viewDidAppear()
+        
+        XCTAssertEqual(mockPresenter.location, serviceInfo)
+    }
+    
+    func test_currentLocationNil() {
+        mockLocationServes.location = nil
+        
+        sut.viewDidAppear()
+        
+        XCTAssertTrue(mockPresenter.isServerUnavailableSend)
+    }
 }
 
 private extension HomeInteractorTests {
+    
     class MockTimer: TimeService {
         var tick: () -> Void = {}
         private(set) var isStarted = false
@@ -127,6 +145,9 @@ private extension HomeInteractorTests {
     }
     
     class MockPresenter: HomePresentationLogic {
+        var location: ServiceInfo?
+        private(set) var isServerUnavailableSend = false
+        
         var state: [ConnectionState] = .init()
         private(set) var counter: TimeInterval = 0
         
@@ -136,6 +157,14 @@ private extension HomeInteractorTests {
         
         func connectionTime(_ time: TimeInterval) {
             counter = time
+        }
+        
+        func currentServer(_ serviceInfo: ServiceInfo) {
+            location = serviceInfo
+        }
+        
+        func serverUnavailable() {
+            isServerUnavailableSend = true
         }
     }
     
@@ -158,8 +187,10 @@ private extension HomeInteractorTests {
     }
     
     class MockLocationServes: LocationService {
-        func currentLocation() -> ServiceInfo {
-            .init(iconName: "", title: "", ipAdress: "", ping: 0)
+        var location: ServiceInfo?
+        
+        func currentLocation() -> ServiceInfo? {
+            return location
         }
         
         func basicServices() -> [ServiceInfo] {

@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct ServiceInfo {
+public struct ServiceInfo: Equatable {
     public let iconName: String
     public let title: String
     public let ipAdress: String
@@ -22,7 +22,7 @@ public struct ServiceInfo {
 }
 
 public protocol LocationService {
-    func currentLocation() -> ServiceInfo
+    func currentLocation() -> ServiceInfo?
     func basicServices() -> [ServiceInfo]
     func setSelected(_ service: ServiceInfo)
 }

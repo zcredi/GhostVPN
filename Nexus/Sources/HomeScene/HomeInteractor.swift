@@ -59,7 +59,11 @@ final class HomeInteractor: HomeBusinessLogic, HomeDataStore {
     
     //MARK: - Public methods
     func viewDidAppear() {
-        let selectedService = locationService.currentLocation()
+        guard let selectedService = locationService.currentLocation() else {
+            presenter?.serverUnavailable()
+            return
+        }
+        presenter?.currentServer(selectedService)
     }
     
     func connectToVPN() {

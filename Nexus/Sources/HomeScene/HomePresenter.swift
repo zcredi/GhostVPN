@@ -11,6 +11,21 @@
 //
 
 import Foundation
+import LocationService
+
+struct ServerViewModel {
+    let iconName: String
+    let title: String
+    let ipAdress: String
+    let ping: Int
+    
+    init(from serviceInfo: ServiceInfo) {
+        self.iconName = serviceInfo.iconName
+        self.title = serviceInfo.title
+        self.ipAdress = serviceInfo.ipAdress
+        self.ping = serviceInfo.ping
+    }
+}
 
 enum ConnectionState: Equatable {
     case disconnected
@@ -24,19 +39,52 @@ enum ConnectionState: Equatable {
 }
 
 protocol HomePresentationLogic: AnyObject {
-    func  connectionState(_ state: ConnectionState)
+    func connectionState(_ state: ConnectionState)
     func connectionTime(_ time: TimeInterval)
+    func currentServer(_ serviceInfo: ServiceInfo)
+    func serverUnavailable()
 }
 
 final class HomePresenter: HomePresentationLogic {
-    weak var viewController: HomeDisplayLogic?
+    weak var view: HomeDisplayLogic?
     
     func connectionState(_ state: ConnectionState) {
-        
+        var stateDescription: String
+        switch state {
+        case .disconnected:
+            stateDescription = "Disconnected"
+        case .loading:
+            stateDescription = "Connecting"
+        case .connected:
+            stateDescription = "Connected"
+        case .error(let error):
+            stateDescription = "Error: \(error.localizedDescription)"
+        }
+        view?.displayConnectionState(stateDescription)
     }
     
     func connectionTime(_ time: TimeInterval) {
+        let formattedTime = formatTime(time)
+        view?.displayConnectionTime(formattedTime)
         
     }
     
+    //MARK: - Formatter Time
+    func formatTime(_ time: TimeInterval) -> String {
+        let formatter = DateComponentsFormatter()
+        formatter.allowedUnits = [.hour, .minute, .second]
+        formatter.unitsStyle = .positional
+        formatter.zeroFormattingBehavior = .pad
+        return formatter.string(from: time) ?? "00:00:00"
+    }
+    
+    func currentServer(_ serviceInfo: ServiceInfo) {
+        let viewModel = ServerViewModel(from: serviceInfo)
+        view?.displayCurrentServer(viewModel)
+    }
+    
+    func serverUnavailable() {
+        let errorServerMessage = "Сервер недоступен."
+        view?.displayServerError(errorServerMessage)
+    }
 }
