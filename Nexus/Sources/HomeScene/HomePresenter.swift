@@ -13,6 +13,15 @@
 import Foundation
 import LocationService
 
+//MARK: - Formatter Time
+func formatTime(_ time: TimeInterval) -> String {
+    let formatter = DateComponentsFormatter()
+    formatter.allowedUnits = [.hour, .minute, .second]
+    formatter.unitsStyle = .positional
+    formatter.zeroFormattingBehavior = .pad
+    return formatter.string(from: time) ?? "00:00:00"
+}
+
 struct ServerViewModel {
     let iconName: String
     let title: String
@@ -47,6 +56,13 @@ protocol HomePresentationLogic: AnyObject {
 
 final class HomePresenter: HomePresentationLogic {
     weak var view: HomeDisplayLogic?
+    private let timeFormatter: (TimeInterval) -> String
+    
+    init(
+        timeFormatter: @escaping (TimeInterval) -> String
+    ) {
+        self.timeFormatter = timeFormatter
+    }
     
     func connectionState(_ state: ConnectionState) {
         var stateDescription: String
@@ -64,18 +80,9 @@ final class HomePresenter: HomePresentationLogic {
     }
     
     func connectionTime(_ time: TimeInterval) {
-        let formattedTime = formatTime(time)
+        let formattedTime = timeFormatter(time)
         view?.displayConnectionTime(formattedTime)
         
-    }
-    
-    //MARK: - Formatter Time
-    func formatTime(_ time: TimeInterval) -> String {
-        let formatter = DateComponentsFormatter()
-        formatter.allowedUnits = [.hour, .minute, .second]
-        formatter.unitsStyle = .positional
-        formatter.zeroFormattingBehavior = .pad
-        return formatter.string(from: time) ?? "00:00:00"
     }
     
     func currentServer(_ serviceInfo: ServiceInfo) {

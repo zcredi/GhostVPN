@@ -14,6 +14,16 @@ import UIKit
 import LocationService
 import VPNManager
 
+protocol HomeView: UIView {
+    var actionButton: UIButton { get }
+    var connectionStateLabel: UILabel { get }
+    var iconNameImageView: UIImageView { get }
+    var titleServerLabel: UILabel { get }
+    var ipAdressLabel: UILabel { get }
+    var pingLabel: UILabel { get }
+    var timerLabel: UILabel { get }
+}
+
 protocol HomeDisplayLogic: AnyObject {
     func displayConnectionState(_ state: String)
     func displayCurrentServer(_ viewModel: ServerViewModel)
@@ -37,6 +47,12 @@ public final class HomeViewController: UIViewController {
     
     
     //MARK: - init(_:)
+//    init(
+//        view: HomeView,
+//        interactor: HomeBusinessLogic
+//    ) {
+//        super.init(nibName: nil, bundle: nil)
+//    }
     
     init(interactor: HomeBusinessLogic? = nil, vpnManager: VPNManagerProtocol, locationService: LocationService) {
         self.vpnManager = vpnManager
@@ -49,26 +65,37 @@ public final class HomeViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    // MARK: Setup
-    
-    private func setup() {
-        let viewController = self
-        let interactor = HomeInteractor(vpnManager: vpnManager, locationService: locationService)
-        let presenter = HomePresenter()
-        viewController.interactor = interactor
-        interactor.presenter = presenter
-        presenter.view = viewController
-        
+    //MARK: - Life cycle
+    public override func loadView() {
+//        view = Твой Кастомный View
     }
-    
-    // MARK: View lifecycle
     
     public override func viewDidLoad() {
         super.viewDidLoad()
-        setup()
+//        setup()
         interactor?.connectToVPN()
         interactor?.disconnectFromVPN()
     }
+    
+    public override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        interactor?.viewDidAppear()
+    }
+    
+    // MARK: Setup
+    
+//    private func setup() {
+//        let viewController = self
+//        let interactor = HomeInteractor(vpnManager: vpnManager, locationService: locationService)
+//        let presenter = HomePresenter(timeFormatter: formatTime)
+//        viewController.interactor = interactor
+//        interactor.presenter = presenter
+//        presenter.view = viewController
+//        
+//    }
+    
+    // MARK: View lifecycle
+    
     
 }
 
@@ -97,5 +124,11 @@ extension HomeViewController: HomeDisplayLogic {
             alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
             present(alert, animated: true)
         }
+    }
+}
+
+private extension HomeViewController {
+    func foo() {
+        interactor?.connectToVPN()
     }
 }

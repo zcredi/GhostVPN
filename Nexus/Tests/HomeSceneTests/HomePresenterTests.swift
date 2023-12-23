@@ -15,7 +15,7 @@ final class HomePresenterTests: XCTestCase {
     
     override func setUp() async throws {
         try await super.setUp()
-        sut = HomePresenter()
+        sut = HomePresenter(timeFormatter: { _ in "" })
         mockView = MockView()
         sut.view = mockView
     }
@@ -74,10 +74,12 @@ final class HomePresenterTests: XCTestCase {
     }
     
     func test_displayConnectionTime() {
-        let timeInterval: TimeInterval = 123
-        sut.connectionTime(timeInterval)
+        let formatted = "Baz"
+        sut = HomePresenter(timeFormatter: { _ in formatted })
+        sut.view = mockView
+        sut.connectionTime(0)
         
-        XCTAssertEqual(mockView.displayedConnectionTime, "00:02:03")
+        XCTAssertEqual(mockView.displayedConnectionTime, formatted)
     }
 }
 
