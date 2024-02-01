@@ -7,15 +7,20 @@
 
 import XCTest
 import LocationService
+import CommonServices
+import TimeFormatting
 @testable import HomeScene
 
 final class HomePresenterTests: XCTestCase {
     private var sut: HomePresenter!
     private var mockView: MockView!
+    private var mockTimeFormatter: MockTimeFormatter!
     
     override func setUp() async throws {
         try await super.setUp()
-        sut = HomePresenter(timeFormatter: { _ in "" })
+        let mockLocalizer = MockLocalizer()
+        mockTimeFormatter = MockTimeFormatter()
+        sut = HomePresenter(timeFormatter: mockTimeFormatter, localizer: mockLocalizer)
         mockView = MockView()
         sut.view = mockView
     }
@@ -26,84 +31,75 @@ final class HomePresenterTests: XCTestCase {
         try await super.tearDown()
     }
     
-    func test_connectionState_isDisplayed() {
-        sut.connectionState(.connected)
+    func test_presentHomeData_WithConnectedState() {
+        let serviceInfo = ServiceInfo(iconName: "icon", title: "title", ipAdress: "address", ping: 123)
+        sut.presentHomeData(connectionState: .connected, connectionTime: 1234, serverInfo: serviceInfo, error: nil)
         
-        XCTAssertEqual(mockView.displayedConnectionState, "Connected")
+        XCTAssertEqual(mockView.displayedViewModel?.connectionState, "ConnectedKey")
+        XCTAssertEqual(mockView.displayedViewModel?.serverInfo?.iconName, "icon")
+        XCTAssertEqual(mockView.displayedViewModel?.serverInfo?.title, "title")
+        XCTAssertEqual(mockView.displayedViewModel?.serverInfo?.ipAdress, "address")
+        XCTAssertEqual(mockView.displayedViewModel?.serverInfo?.ping, "123")
     }
     
-    func test_connectionState_whenDisconnected() {
-        sut.connectionState(.disconnected)
+    func test_presentHomeData_WithDisconnectedState() {
+        sut.presentHomeData(connectionState: .disconnected, connectionTime: 0, serverInfo: nil, error: nil)
         
-        XCTAssertEqual(mockView.displayedConnectionState, "Disconnected")
+        XCTAssertEqual(mockView.displayedViewModel?.connectionState, "DisconnectedKey")
+        XCTAssertNil(mockView.displayedViewModel?.serverInfo)
     }
     
-    func test_connectionState_whenLoading() {
-        sut.connectionState(.loading)
+    func test_presentHomeData_WithLoadingState() {
+        sut.presentHomeData(connectionState: .loading, connectionTime: 0, serverInfo: nil, error: nil)
         
-        XCTAssertEqual(mockView.displayedConnectionState, "Connecting")
+        XCTAssertEqual(mockView.displayedViewModel?.connectionState, "ConnectingKey")
     }
     
-    func test_connectionState_whenError() {
-        let error = URLError(.badURL)
-        sut.connectionState(.error(error))
+    func test_presentHomeData_WithErrorState() {
+        let error = NSError(domain: "TestError", code: -1, userInfo: nil)
+        sut.presentHomeData(connectionState: .error(error), connectionTime: 0, serverInfo: nil, error: error)
         
-        let errorMessage = "Error: \(error.localizedDescription)"
-        XCTAssertEqual(mockView.displayedConnectionState, errorMessage)
+        let expectedErrorMessage = "ErrorKey: \(error.localizedDescription)"
+        XCTAssertEqual(mockView.displayedViewModel?.connectionState, expectedErrorMessage)
     }
     
-    func test_currentServer_isDisplayed() {
-        let serviceInfo = ServiceInfo(iconName: "bus", title: "bus", ipAdress: "bus", ping: 0)
-        sut.currentServer(serviceInfo)
+    func test_presentHomeData_IncludesFormattedConnectionTime() {
+        let expectedFormattedTime = "ExpectedFormattedTime"
+        mockTimeFormatter.mockedFormattedTime = expectedFormattedTime
+        let serviceInfo = ServiceInfo(iconName: "icon", title: "title", ipAdress: "address", ping: 123)
         
-        guard let viewModel = mockView.displayedServerViewModel else {
-            XCTFail("ServerViewModel не был передан.")
-            return
-        }
-        
-        XCTAssertEqual(viewModel.iconName, serviceInfo.iconName)
-        XCTAssertEqual(viewModel.title, serviceInfo.title)
-        XCTAssertEqual(viewModel.ipAdress, serviceInfo.ipAdress)
-        XCTAssertEqual(viewModel.ping, serviceInfo.ping)
-    }
-    
-    func test_serverUnavailable_isCalledWithErrorMessage() {
-        sut.serverUnavailable()
-        
-        XCTAssertEqual(mockView.displayedErrorMessage, "Сервер недоступен.")
-    }
-    
-    func test_displayConnectionTime() {
-        let formatted = "Baz"
-        sut = HomePresenter(timeFormatter: { _ in formatted })
-        sut.view = mockView
-        sut.connectionTime(0)
-        
-        XCTAssertEqual(mockView.displayedConnectionTime, formatted)
+        sut.presentHomeData(connectionState: .connected, connectionTime: 1234, serverInfo: serviceInfo, error: nil)
+
+        XCTAssertEqual(mockView.displayedViewModel?.connectionTime, expectedFormattedTime)
     }
 }
 
 private extension HomePresenterTests {
     class MockView: HomeDisplayLogic {
-        var displayedConnectionState: String?
-        var displayedServerViewModel: ServerViewModel?
-        var displayedErrorMessage: String?
-        var displayedConnectionTime: String?
+        var displayedViewModel: HomeViewModel?
         
-        func displayConnectionState(_ state: String) {
-            displayedConnectionState = state
+        func displayHomeData(_ viewModel: HomeViewModel) {
+            displayedViewModel = viewModel
         }
+    }
+    
+    class MockTimeFormatter: TimeFormatting {
+        var mockedFormattedTime = "FormattedTime"
         
-        func displayCurrentServer(_ viewModel: ServerViewModel) {
-            displayedServerViewModel = viewModel
+        func formatTime(_ time: TimeInterval) -> String {
+            return mockedFormattedTime
         }
+    }
+    
+    class MockLocalizer: Localizing {
+        var disconnected: String = "DisconnectedKey"
+        var connecting: String = "ConnectingKey"
+        var connected: String = "ConnectedKey"
+        var error: String = "ErrorKey"
+        var serverUnavailable: String = "ServerErrorKey"
         
-        func displayServerError(_ message: String) {
-            displayedErrorMessage = message
-        }
-        
-        func displayConnectionTime(_ time: String) {
-            displayedConnectionTime = time
+        func localizedString(for key: String) -> String {
+            return key
         }
     }
 }

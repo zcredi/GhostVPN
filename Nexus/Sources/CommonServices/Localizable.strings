@@ -1,0 +1,13 @@
+/* 
+  Localizable.strings
+  
+
+  Created by Владислав on 07.01.2024.
+  
+*/
+
+"DisconnectedKey" = "Disconnected";
+"ConnectingKey" = "Connecting";
+"ConnectedKey" = "Connected";
+"ErrorKey" = "Error";
+"ServerErrorKey" = "Server is unavailable";

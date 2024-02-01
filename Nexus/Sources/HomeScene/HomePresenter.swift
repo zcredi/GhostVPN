@@ -12,15 +12,8 @@
 
 import Foundation
 import LocationService
-
-//MARK: - Formatter Time
-func formatTime(_ time: TimeInterval) -> String {
-    let formatter = DateComponentsFormatter()
-    formatter.allowedUnits = [.hour, .minute, .second]
-    formatter.unitsStyle = .positional
-    formatter.zeroFormattingBehavior = .pad
-    return formatter.string(from: time) ?? "00:00:00"
-}
+import CommonServices
+import TimeFormatting
 
 struct ServerViewModel {
     let iconName: String
@@ -32,8 +25,15 @@ struct ServerViewModel {
         self.iconName = serviceInfo.iconName
         self.title = serviceInfo.title
         self.ipAdress = serviceInfo.ipAdress
-        self.ping = serviceInfo.ping
+        self.ping = String(serviceInfo.ping)
     }
+}
+
+struct HomeViewModel {
+    let connectionState: String
+    let serverInfo: ServerViewModel?
+    let connectionTime: String
+    let errorMessage: String?
 }
 
 enum ConnectionState: Equatable {
@@ -48,50 +48,89 @@ enum ConnectionState: Equatable {
 }
 
 protocol HomePresentationLogic: AnyObject {
-    func connectionState(_ state: ConnectionState)
-    func connectionTime(_ time: TimeInterval)
-    func currentServer(_ serviceInfo: ServiceInfo)
-    func serverUnavailable()
+    func presentHomeData(connectionState: ConnectionState, connectionTime: TimeInterval, serverInfo: ServiceInfo?, error: Error?)
 }
 
 final class HomePresenter: HomePresentationLogic {
     weak var view: HomeDisplayLogic?
-    private let timeFormatter: (TimeInterval) -> String
+    private let timeFormatter: TimeFormatting
+    private let localizer: Localizing
     
     init(
-        timeFormatter: @escaping (TimeInterval) -> String
+        timeFormatter: TimeFormatting,
+        localizer: Localizing
     ) {
         self.timeFormatter = timeFormatter
+        self.localizer = localizer
     }
     
-    func connectionState(_ state: ConnectionState) {
-        var stateDescription: String
+    func presentHomeData(connectionState: ConnectionState, connectionTime: TimeInterval, serverInfo: ServiceInfo?, error: Error?) {
+        let connectionStateDescription = description(for: connectionState)
+        let formattedTime = timeFormatter.formatTime(connectionTime)
+        let serverViewModel = serverInfo.map { ServerViewModel(from: $0) }
+        
+        let viewModel = HomeViewModelBuilder()
+            .withConnectionState(connectionStateDescription)
+            .withServerInfo(serverViewModel)
+            .withConnectionTime(formattedTime)
+            .withErrorMessage(error?.localizedDescription)
+            .build()
+        
+        view?.displayHomeData(viewModel)
+    }
+    
+    func description(for state: ConnectionState) -> String {
         switch state {
         case .disconnected:
-            stateDescription = "Disconnected"
+            return localizer.disconnected
         case .loading:
-            stateDescription = "Connecting"
+            return  localizer.connecting
         case .connected:
-            stateDescription = "Connected"
+            return  localizer.connected
         case .error(let error):
-            stateDescription = "Error: \(error.localizedDescription)"
+            return "\(localizer.error): \(error.localizedDescription)"
         }
-        view?.displayConnectionState(stateDescription)
     }
-    
-    func connectionTime(_ time: TimeInterval) {
-        let formattedTime = timeFormatter(time)
-        view?.displayConnectionTime(formattedTime)
+}
+
+private extension HomePresenter {
+    class HomeViewModelBuilder {
+        private var connectionState: String = ""
+        private var serverInfo: ServerViewModel?
+        private var connectionTime: String = ""
+        private var errorMessage: String?
         
-    }
-    
-    func currentServer(_ serviceInfo: ServiceInfo) {
-        let viewModel = ServerViewModel(from: serviceInfo)
-        view?.displayCurrentServer(viewModel)
-    }
-    
-    func serverUnavailable() {
-        let errorServerMessage = "Сервер недоступен."
-        view?.displayServerError(errorServerMessage)
+        @discardableResult
+        func withConnectionState(_ state: String) -> HomeViewModelBuilder {
+            self.connectionState = state
+            return self
+        }
+        
+        @discardableResult
+        func withServerInfo(_ info: ServerViewModel?) -> HomeViewModelBuilder {
+            self.serverInfo = info
+            return self
+        }
+        
+        @discardableResult
+        func withConnectionTime(_ time: String) -> HomeViewModelBuilder {
+            self.connectionTime = time
+            return self
+        }
+        
+        @discardableResult
+        func withErrorMessage(_ message: String?) -> HomeViewModelBuilder {
+            self.errorMessage = message
+            return self
+        }
+        
+        func build() -> HomeViewModel {
+            return HomeViewModel(
+                connectionState: connectionState,
+                serverInfo: serverInfo,
+                connectionTime: connectionTime,
+                errorMessage: errorMessage
+            )
+        }
     }
 }
