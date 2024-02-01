@@ -41,10 +41,7 @@ final class HomeInteractor: HomeBusinessLogic, HomeDataStore {
     private let vpnManager: VPNManagerProtocol
     private let locationService: LocationService
     private let timeService: TimeService
-    
-    private var connectionTime: TimeInterval = 0 {
-        didSet { presenter?.connectionTime(connectionTime) }
-    }
+    private var connectionTime: TimeInterval = 0
     
     //MARK: - init(_:)
     init(
@@ -60,14 +57,19 @@ final class HomeInteractor: HomeBusinessLogic, HomeDataStore {
     //MARK: - Public methods
     func viewDidAppear() {
         guard let selectedService = locationService.currentLocation() else {
-            presenter?.serverUnavailable()
+            presenter?.presentHomeData(connectionState: .disconnected, connectionTime: connectionTime, serverInfo: nil, error: NetworkError.noData)
             return
         }
-        presenter?.currentServer(selectedService)
+        presenter?.presentHomeData(connectionState: .connected, connectionTime: connectionTime, serverInfo: selectedService, error: nil)
     }
     
     func connectToVPN() {
-        presenter?.connectionState(.loading)
+        guard let selectedService = locationService.currentLocation() else {
+            presenter?.presentHomeData(connectionState: .error(NetworkError.noData), connectionTime: connectionTime, serverInfo: nil, error: NetworkError.noData)
+            return
+        }
+        
+        // Здесь должна быть логика подключения к VPN
         vpnManager.connectToVPN(
             .init(
                 userName: "",
@@ -75,14 +77,16 @@ final class HomeInteractor: HomeBusinessLogic, HomeDataStore {
             ),
             completion: handler()
         )
+        
+        // Обновить состояние подключения
+        presenter?.presentHomeData(connectionState: .loading, connectionTime: connectionTime, serverInfo: selectedService, error: nil)
     }
     
     func disconnectFromVPN() {
         vpnManager.disconnectFromVPN()
-        timeService.stop()
-        presenter?.connectionState(.disconnected)
-    }
-    
+               timeService.stop()
+               presenter?.presentHomeData(connectionState: .disconnected, connectionTime: connectionTime, serverInfo: nil, error: nil)
+           }
 }
 
 //MARK: - private methods
@@ -94,15 +98,15 @@ private extension HomeInteractor {
     }
     
     func handler() -> (Error?) -> Void {
-        { [weak self] error in
-            guard let self else { return }
-            switch error {
-            case .some(let error):
-                presenter?.connectionState(.error(error))
-            case .none:
-                presenter?.connectionState(.connected)
-                startTimer()
-            }
-        }
-    }
+           { [weak self] error in
+               guard let self = self else { return }
+
+               let currentState: ConnectionState = error != nil ? .error(error!) : .connected
+               self.presenter?.presentHomeData(connectionState: currentState, connectionTime: self.connectionTime, serverInfo: self.locationService.currentLocation(), error: error)
+
+               if error == nil {
+                   self.startTimer()
+               }
+           }
+       }
 }

@@ -41,90 +41,81 @@ final class HomeInteractorTests: XCTestCase {
         try await super.tearDown()
     }
     
+    // Тест подключения к VPN
     func test_connectToVPN_ServiceRequested() {
-        sut.presenter = mockPresenter
         sut.connectToVPN()
-        
         XCTAssertTrue(mockVPN.isRequested)
+        XCTAssertNotNil(mockPresenter.lastPresentedHomeData)
+        XCTAssertEqual(mockPresenter.lastPresentedHomeData?.connectionState, .connecting)
     }
     
+    // Тест успешного подключения к VPN
     func test_connectToVPN_EndWithSuccess() {
         sut.connectToVPN()
-        
-        XCTAssertEqual(mockPresenter.state, [.loading, .connected])
+        XCTAssertTrue(mockTimer.isStarted)
+        XCTAssertEqual(mockPresenter.lastPresentedHomeData?.connectionState, "connected")
     }
     
+    // Тест ошибки подключения к VPN
     func test_connectToVPN_EndWithError() {
         let error = URLError(.badURL)
         mockVPN.error = error
-        
         sut.connectToVPN()
-        
-        XCTAssertEqual(mockPresenter.state, [.loading, .error(error)])
+        XCTAssertFalse(mockTimer.isStarted)
+        XCTAssertEqual(mockPresenter.lastPresentedHomeData?.connectionState, "error")
     }
     
+    // Тест отключения от VPN
     func test_disconnectToVPN() {
-        mockPresenter.state = []
-        
         sut.disconnectFromVPN()
-        
         XCTAssertTrue(mockVPN.isRequested)
-        XCTAssertEqual(mockPresenter.state.last, .disconnected)
+        XCTAssertEqual(mockPresenter.lastPresentedHomeData?.connectionState, "disconnected")
     }
     
     func test_connectToVPN_startsTimer() {
         sut.connectToVPN()
         
         XCTAssertTrue(mockTimer.isStarted)
-        
     }
     
     func test_connectToVPNFailed_doesntStartTimer() {
-        let error = URLError(.badURL)
-        mockVPN.error = error
-        
+        mockVPN.error = URLError(.badURL)
         sut.connectToVPN()
         
         XCTAssertFalse(mockTimer.isStarted)
     }
     
+    // Тест обновления времени подключения
     func test_interactorPublishTime() {
         sut.connectToVPN()
-        
         mockTimer.tick()
-        mockTimer.tick()
-        mockTimer.tick()
-        
-        XCTAssertEqual(mockPresenter.counter, 3)
+        XCTAssertEqual(mockPresenter.lastPresentedHomeData?.connectionTime, "1")
     }
     
     func test_interactorStopPublishingTimeAfterDisconnect() {
         sut.connectToVPN()
-        
         mockTimer.tick()
         
         sut.disconnectFromVPN()
-        
         mockTimer.tick()
         
-        XCTAssertEqual(mockPresenter.counter, 1)
+        let expectedTimeAfterDisconnect = mockPresenter.lastPresentedHomeData?.connectionTime
+        XCTAssertEqual(expectedTimeAfterDisconnect, "1")
     }
     
+    // Тест обработки текущего местоположения
     func test_currentLocationSent() {
         let serviceInfo = ServiceInfo(iconName: "bus", title: "bus", ipAdress: "bus", ping: 0)
         mockLocationServes.location = serviceInfo
-        
         sut.viewDidAppear()
-        
-        XCTAssertEqual(mockPresenter.location, serviceInfo)
+        XCTAssertEqual(mockPresenter.lastPresentedHomeData?.serverInfo?.iconName, "bus")
     }
     
+    // Тест обработки отсутствия местоположения
     func test_currentLocationNil() {
         mockLocationServes.location = nil
-        
         sut.viewDidAppear()
-        
-        XCTAssertTrue(mockPresenter.isServerUnavailableSend)
+        XCTAssertEqual(mockPresenter.lastPresentedHomeData?.connectionState, "disconnected")
     }
 }
 
@@ -145,26 +136,19 @@ private extension HomeInteractorTests {
     }
     
     class MockPresenter: HomePresentationLogic {
-        var location: ServiceInfo?
-        private(set) var isServerUnavailableSend = false
         
-        var state: [ConnectionState] = .init()
-        private(set) var counter: TimeInterval = 0
+        private(set) var lastPresentedHomeData: HomeViewModel?
         
-        func connectionState(_ state: HomeScene.ConnectionState) {
-            self.state.append(state)
-        }
-        
-        func connectionTime(_ time: TimeInterval) {
-            counter = time
-        }
-        
-        func currentServer(_ serviceInfo: ServiceInfo) {
-            location = serviceInfo
-        }
-        
-        func serverUnavailable() {
-            isServerUnavailableSend = true
+        func presentHomeData(connectionState: ConnectionState, connectionTime: TimeInterval, serverInfo: ServiceInfo?, error: Error?) {
+            let serverViewModel = serverInfo.map { ServerViewModel(from: $0) }
+            let errorMessage = error.map { _ in "Error" }
+            let viewModel = HomeViewModel(
+                connectionState: String(describing: connectionState),
+                serverInfo: serverViewModel,
+                connectionTime: String(connectionTime),
+                errorMessage: errorMessage
+            )
+            lastPresentedHomeData = viewModel
         }
     }
     

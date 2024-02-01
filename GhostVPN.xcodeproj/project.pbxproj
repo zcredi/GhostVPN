@@ -13,6 +13,7 @@
 		860268D82B10EDBB00CAE538 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 860268D62B10EDBB00CAE538 /* LaunchScreen.storyboard */; };
 		86760E9B2B286F1B00A058AC /* HomeScene in Frameworks */ = {isa = PBXBuildFile; productRef = 86760E9A2B286F1B00A058AC /* HomeScene */; };
 		8691376C2B25AC0400B7D8E8 /* Nexus in Resources */ = {isa = PBXBuildFile; fileRef = 8691376B2B25AC0400B7D8E8 /* Nexus */; };
+		86968F272B487C990060D4C4 /* SceneFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86968F262B487C990060D4C4 /* SceneFactory.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -23,6 +24,7 @@
 		860268D72B10EDBB00CAE538 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		860268D92B10EDBB00CAE538 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8691376B2B25AC0400B7D8E8 /* Nexus */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = Nexus; sourceTree = "<group>"; };
+		86968F262B487C990060D4C4 /* SceneFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneFactory.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,7 +60,8 @@
 		860268CA2B10EDBA00CAE538 /* GhostVPN */ = {
 			isa = PBXGroup;
 			children = (
-				86BA3C2A2B1772C5004E72C5 /* Application */,
+				86BA3C2A2B1772C5004E72C5 /* Home */,
+				86968F242B487C840060D4C4 /* SceneFactory */,
 				86BA3C242B175CAC004E72C5 /* Services */,
 				86BA3C262B175CD2004E72C5 /* Models */,
 				86BA3C252B175CC2004E72C5 /* Scenes */,
@@ -72,6 +75,14 @@
 			children = (
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		86968F242B487C840060D4C4 /* SceneFactory */ = {
+			isa = PBXGroup;
+			children = (
+				86968F262B487C990060D4C4 /* SceneFactory.swift */,
+			);
+			path = SceneFactory;
 			sourceTree = "<group>";
 		};
 		86BA3C242B175CAC004E72C5 /* Services */ = {
@@ -95,13 +106,13 @@
 			path = Models;
 			sourceTree = "<group>";
 		};
-		86BA3C2A2B1772C5004E72C5 /* Application */ = {
+		86BA3C2A2B1772C5004E72C5 /* Home */ = {
 			isa = PBXGroup;
 			children = (
 				860268CB2B10EDBA00CAE538 /* AppDelegate.swift */,
 				860268CD2B10EDBA00CAE538 /* SceneDelegate.swift */,
 			);
-			path = Application;
+			path = Home;
 			sourceTree = "<group>";
 		};
 		86BA3C2B2B1772DA004E72C5 /* SupportingFiles */ = {
@@ -191,6 +202,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				860268CC2B10EDBA00CAE538 /* AppDelegate.swift in Sources */,
+				86968F272B487C990060D4C4 /* SceneFactory.swift in Sources */,
 				860268CE2B10EDBA00CAE538 /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
